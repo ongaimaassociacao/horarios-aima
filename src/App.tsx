@@ -81,10 +81,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ 
-      padding: '20px', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa', minHeight: '100vh',
-      WebkitUserSelect: 'none', userSelect: 'none'
-    }}>
+    <div style={{ padding: '20px', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: '#fff', padding: '15px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
         <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '50px' }} />
         <button onClick={() => isAdmin ? setIsAdmin(false) : prompt("Senha:") === "AIMA2026" ? setIsAdmin(true) : alert("Senha errada")}>
@@ -92,43 +89,42 @@ export default function App() {
         </button>
       </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px', background: '#e9ecef', padding: '15px', borderRadius: '8px' }}>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <select value={filtroDia} onChange={(e) => setFiltroDia(e.target.value)} style={{ padding: '10px', flex: 1 }}>
-            {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'].map(d => <option key={d}>{d}</option>)}
-          </select>
-          <select value={filtroTurno} onChange={(e) => setFiltroTurno(e.target.value)} style={{ padding: '10px', flex: 1 }}>
-            <option>Manhã</option>
-            <option>Tarde</option>
-            <option>Dia todo</option>
-          </select>
-        </div>
-        {isAdmin && (
-          <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-            <input placeholder="Nome novo terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '10px', flex: 1 }} />
-            <button onClick={cadastrarTerapeuta} style={{ padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}>Cadastrar</button>
+      {isAdmin && (
+        <div style={{ background: '#fff3cd', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ffeeba' }}>
+          <h4 style={{ margin: '0 0 10px 0' }}>Modo Administrador</h4>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <input placeholder="Nome do terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '8px', flex: 1 }} />
+            <button onClick={cadastrarTerapeuta} style={{ padding: '8px 15px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>Cadastrar Terapeuta</button>
           </div>
-        )}
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <select value={filtroDia} onChange={(e) => setFiltroDia(e.target.value)} style={{ padding: '10px', flex: 1 }}>
+          {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'].map(d => <option key={d}>{d}</option>)}
+        </select>
+        <select value={filtroTurno} onChange={(e) => setFiltroTurno(e.target.value)} style={{ padding: '10px', flex: 1 }}>
+          <option>Manhã</option>
+          <option>Tarde</option>
+          <option>Dia todo</option>
+        </select>
       </div>
 
-      <h2 style={{ color: '#0056b3' }}>{filtroDia} - {filtroTurno}</h2>
-      
       <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '10px' }}>
         <tbody>
           {getHorarios().map(h => (
             <tr key={h}>
-              <td style={{ fontWeight: 'bold', width: '60px' }}>{h}</td>
+              <td style={{ fontWeight: 'bold' }}>{h}</td>
               {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, t.turno, filtroTurno)).map((t: any) => (
-                <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', verticalAlign: 'top' }}>
+                <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', verticalAlign: 'top' }}>
                   <strong style={{ color: '#0056b3', cursor: 'pointer' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
                     const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
-                      <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag?.status === 'Não vem' ? '#ffebee' : '#f1f8ff', borderRadius: '6px' }}>
+                      <div key={slot} style={{ marginTop: '5px', padding: '5px', background: '#f8f9fa', borderRadius: '4px' }}>
                         {ag ? (
                           <>
                             <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            <div style={{ fontSize: '10px', color: ag.status === 'Não vem' ? 'red' : 'green' }}>{ag.status}</div>
                             {isAdmin && <button onClick={() => atualizarStatus(ag, ag.status === 'Confirmado' ? 'Não vem' : 'Confirmado')}>Trocar</button>}
                           </>
                         ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
