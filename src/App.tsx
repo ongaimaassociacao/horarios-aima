@@ -118,19 +118,15 @@ export default function App() {
               <td style={{ fontWeight: 'bold' }}>{h}</td>
               {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, filtroTurno)).map((t: any) => (
                 <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', verticalAlign: 'top' }}>
-                  <strong style={{ color: '#0056b3', cursor: 'pointer' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
+                  <strong style={{ color: '#0056b3', cursor: isAdmin ? 'pointer' : 'default' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
                     const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
-                      <div key={slot} style={{ marginTop: '5px', padding: '5px', background: '#f8f9fa', borderRadius: '4px' }}>
+                      <div key={slot} style={{ marginTop: '5px', padding: '5px', background: ag?.status === 'Não vem' ? '#ffcccc' : '#ccffcc', borderRadius: '4px' }}>
                         {ag ? (
                           <>
-                            <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            {isAdmin && (
-                              <button onClick={() => atualizarStatus(ag)} style={{ marginTop: '5px', fontSize: '10px', background: ag.status === 'Não vem' ? '#ffcccc' : '#ccffcc', border: '1px solid #ccc' }}>
-                                {ag.status === 'Não vem' ? 'Faltou/Não vem' : 'Confirmado'}
-                              </button>
-                            )}
+                            <div style={{ cursor: isAdmin ? 'pointer' : 'default', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
+                            {isAdmin && <button onClick={() => atualizarStatus(ag)} style={{ marginTop: '5px', fontSize: '10px' }}>Trocar Status</button>}
                           </>
                         ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
                       </div>
