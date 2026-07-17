@@ -7,8 +7,8 @@ const supabase = createClient(
 );
 
 export default function App() {
-  const [grade, setGrade] = useState([]);
-  const [terapeutas, setTerapeutas] = useState([]);
+  const [grade, setGrade] = useState<any[]>([]);
+  const [terapeutas, setTerapeutas] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   
   const [filtroDia, setFiltroDia] = useState("Segunda");
@@ -31,7 +31,7 @@ export default function App() {
     carregarDados();
   }
 
-  async function editarTerapeuta(t) {
+  async function editarTerapeuta(t: any) {
     const novoNome = prompt("Editar nome (deixe vazio para excluir):", t.nome);
     if (novoNome === null) return;
     if (novoNome === "") await supabase.from('terapeutas').delete().eq('id', t.id);
@@ -39,7 +39,7 @@ export default function App() {
     carregarDados();
   }
 
-  async function gerenciarPaciente(ag) {
+  async function gerenciarPaciente(ag: any) {
     const acao = prompt("Digite 'editar' ou 'excluir':", "editar");
     if (acao === 'editar') {
       const novoNome = prompt("Novo nome:", ag.pacientes?.nome);
@@ -50,23 +50,23 @@ export default function App() {
     carregarDados();
   }
 
-  async function atualizarStatus(ag, novoStatus) {
+  async function atualizarStatus(ag: any, novoStatus: string) {
     await supabase.from('grade_fixa').update({ status: novoStatus }).eq('id', ag.id);
     carregarDados();
   }
 
-  async function adicionarPaciente(terapeutaId, dia, hora, slot) {
+  async function adicionarPaciente(terapeutaId: any, dia: string, hora: string, slot: number) {
     const nome = prompt("Nome do Paciente:");
     if (!nome) return;
     const { data: p } = await supabase.from('pacientes').insert({ nome }).select().single();
     await supabase.from('grade_fixa').insert({ 
       dia_semana: dia, horario_inicio: hora + ":00", 
-      terapeuta_id: terapeutaId, paciente_id: p.id, slot: slot, status: 'Confirmado' 
+      terapeuta_id: terapeutaId, paciente_id: p?.id, slot: slot, status: 'Confirmado' 
     });
     carregarDados();
   }
 
-  function isHorarioNoTurno(horaStr, turnoTerapeuta, filtroSelecionado) {
+  function isHorarioNoTurno(horaStr: string, turnoTerapeuta: string, filtroSelecionado: string) {
     const hora = parseInt(horaStr.split(':')[0]);
     if (filtroSelecionado === 'Dia todo') return true;
     if (filtroSelecionado === 'Manhã') return hora < 12;
@@ -82,14 +82,9 @@ export default function App() {
 
   return (
     <div style={{ 
-      padding: '20px', 
-      fontFamily: "'Segoe UI', sans-serif", 
-      backgroundColor: '#f8f9fa', 
-      minHeight: '100vh',
-      WebkitUserSelect: 'none', // Bloqueia seleção de texto para parecer app
-      userSelect: 'none'
+      padding: '20px', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa', minHeight: '100vh',
+      WebkitUserSelect: 'none', userSelect: 'none'
     }}>
-      
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: '#fff', padding: '15px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
         <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '50px' }} />
         <button onClick={() => isAdmin ? setIsAdmin(false) : prompt("Senha:") === "AIMA2026" ? setIsAdmin(true) : alert("Senha errada")}>
@@ -108,13 +103,6 @@ export default function App() {
             <option>Dia todo</option>
           </select>
         </div>
-        
-        {isAdmin && (
-          <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
-            <input placeholder="Nome novo terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '10px', flex: 1 }} />
-            <button onClick={cadastrarTerapeuta} style={{ padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}>Cadastrar</button>
-          </div>
-        )}
       </div>
 
       <h2 style={{ color: '#0056b3' }}>{filtroDia} - {filtroTurno}</h2>
@@ -124,11 +112,11 @@ export default function App() {
           {getHorarios().map(h => (
             <tr key={h}>
               <td style={{ fontWeight: 'bold', width: '60px' }}>{h}</td>
-              {terapeutas.filter(t => t.dia === filtroDia && isHorarioNoTurno(h, t.turno, filtroTurno)).map(t => (
+              {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, t.turno, filtroTurno)).map((t: any) => (
                 <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', verticalAlign: 'top' }}>
                   <strong style={{ color: '#0056b3', cursor: 'pointer' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
-                    const ag = grade.find(g => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
+                    const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
                       <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag?.status === 'Não vem' ? '#ffebee' : '#f1f8ff', borderRadius: '6px' }}>
                         {ag ? (
