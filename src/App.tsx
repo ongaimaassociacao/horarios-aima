@@ -50,7 +50,8 @@ export default function App() {
     carregarDados();
   }
 
-  async function atualizarStatus(ag: any, novoStatus: string) {
+  async function atualizarStatus(ag: any) {
+    const novoStatus = ag.status === 'Não vem' ? 'Confirmado' : 'Não vem';
     await supabase.from('grade_fixa').update({ status: novoStatus }).eq('id', ag.id);
     carregarDados();
   }
@@ -66,7 +67,7 @@ export default function App() {
     carregarDados();
   }
 
-  function isHorarioNoTurno(horaStr: string, turnoTerapeuta: string, filtroSelecionado: string) {
+  function isHorarioNoTurno(horaStr: string, filtroSelecionado: string) {
     const hora = parseInt(horaStr.split(':')[0]);
     if (filtroSelecionado === 'Dia todo') return true;
     if (filtroSelecionado === 'Manhã') return hora < 12;
@@ -115,7 +116,7 @@ export default function App() {
           {getHorarios().map(h => (
             <tr key={h}>
               <td style={{ fontWeight: 'bold' }}>{h}</td>
-              {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, t.turno, filtroTurno)).map((t: any) => (
+              {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, filtroTurno)).map((t: any) => (
                 <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', verticalAlign: 'top' }}>
                   <strong style={{ color: '#0056b3', cursor: 'pointer' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
@@ -125,7 +126,11 @@ export default function App() {
                         {ag ? (
                           <>
                             <div style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            {isAdmin && <button onClick={() => atualizarStatus(ag, ag.status === 'Confirmado' ? 'Não vem' : 'Confirmado')}>Trocar</button>}
+                            {isAdmin && (
+                              <button onClick={() => atualizarStatus(ag)} style={{ marginTop: '5px', fontSize: '10px', background: ag.status === 'Não vem' ? '#ffcccc' : '#ccffcc', border: '1px solid #ccc' }}>
+                                {ag.status === 'Não vem' ? 'Faltou/Não vem' : 'Confirmado'}
+                              </button>
+                            )}
                           </>
                         ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
                       </div>
