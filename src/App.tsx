@@ -103,6 +103,12 @@ export default function App() {
             <option>Dia todo</option>
           </select>
         </div>
+        {isAdmin && (
+          <div style={{ display: 'flex', gap: '5px', marginTop: '5px' }}>
+            <input placeholder="Nome novo terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '10px', flex: 1 }} />
+            <button onClick={cadastrarTerapeuta} style={{ padding: '10px', background: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}>Cadastrar</button>
+          </div>
+        )}
       </div>
 
       <h2 style={{ color: '#0056b3' }}>{filtroDia} - {filtroTurno}</h2>
