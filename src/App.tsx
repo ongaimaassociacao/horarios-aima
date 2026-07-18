@@ -50,7 +50,6 @@ export default function App() {
     carregarDados();
   }
 
-  // NOVA LÓGICA: Ciclo Confirmado -> Não vem -> Não marcou -> Confirmado
   async function atualizarStatus(ag: any) {
     let novoStatus = 'Confirmado';
     if (ag.status === 'Confirmado') novoStatus = 'Não vem';
@@ -86,11 +85,11 @@ export default function App() {
     return ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
   };
 
-  // Helper para definir a cor baseada no status
+  // Cores chamativas: Verde intenso, Vermelho vivo e Amarelo vibrante
   const getCorStatus = (status: string) => {
-    if (status === 'Não vem') return '#ffcccc';
-    if (status === 'Não marcou') return '#fff3cd';
-    return '#f1f8ff'; // Cor padrão (Confirmado)
+    if (status === 'Não vem') return '#ff4d4d'; // Vermelho vivo
+    if (status === 'Não marcou') return '#ffeb3b'; // Amarelo vibrante
+    return '#4caf50'; // Verde intenso (Confirmado)
   };
 
   return (
@@ -134,11 +133,11 @@ export default function App() {
                   {[1, 2].map((slot) => {
                     const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
-                      <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag ? getCorStatus(ag.status) : '#f8f9fa', borderRadius: '6px' }}>
+                      <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag ? getCorStatus(ag.status) : '#e9ecef', borderRadius: '6px', color: ag?.status === 'Não marcou' ? 'black' : 'white', fontWeight: 'bold' }}>
                         {ag ? (
                           <>
-                            <div style={{ cursor: isAdmin ? 'pointer' : 'default', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            <div style={{ fontSize: '10px', color: '#555' }}>{ag.status}</div>
+                            <div style={{ cursor: isAdmin ? 'pointer' : 'default' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
+                            <div style={{ fontSize: '10px' }}>{ag.status}</div>
                             {isAdmin && <button onClick={() => atualizarStatus(ag)}>Trocar</button>}
                           </>
                         ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
