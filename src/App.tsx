@@ -94,7 +94,10 @@ export default function App() {
   return (
     <div style={{ width: '100%', minHeight: '100vh', padding: '10px', boxSizing: 'border-box', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', background: '#fff', padding: '10px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
-        <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '40px' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '40px' }} />
+          <h2 style={{ fontSize: '1rem', margin: 0, color: '#333' }}>HORÁRIOS DE ATENDIMENTO AIMA</h2>
+        </div>
         <button onClick={() => isAdmin ? setIsAdmin(false) : prompt("Senha:") === "AIMA2026" ? setIsAdmin(true) : alert("Senha errada")}>
           {isAdmin ? "Sair" : "Login"}
         </button>
