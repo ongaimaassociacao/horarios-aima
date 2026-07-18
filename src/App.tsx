@@ -85,71 +85,70 @@ export default function App() {
     return ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
   };
 
-  // Cores chamativas: Verde intenso, Vermelho vivo e Amarelo vibrante
   const getCorStatus = (status: string) => {
-    if (status === 'Não vem') return '#ff4d4d'; // Vermelho vivo
-    if (status === 'Não marcou') return '#ffeb3b'; // Amarelo vibrante
-    return '#4caf50'; // Verde intenso (Confirmado)
+    if (status === 'Não vem') return '#ff4d4d'; 
+    if (status === 'Não marcou') return '#ffeb3b';
+    return '#4caf50'; 
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: '#fff', padding: '15px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-        <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '50px' }} />
+    <div style={{ width: '100%', minHeight: '100vh', padding: '10px', boxSizing: 'border-box', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#f8f9fa' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', background: '#fff', padding: '10px', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+        <img src="https://i.ibb.co/kVxhMRtT/LOGO.jpg" alt="Logo" style={{ height: '40px' }} />
         <button onClick={() => isAdmin ? setIsAdmin(false) : prompt("Senha:") === "AIMA2026" ? setIsAdmin(true) : alert("Senha errada")}>
           {isAdmin ? "Sair" : "Login"}
         </button>
       </header>
 
       {isAdmin && (
-        <div style={{ background: '#fff3cd', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ffeeba' }}>
-          <h4 style={{ margin: '0 0 10px 0' }}>Modo Administrador</h4>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <input placeholder="Nome do terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '8px', flex: 1 }} />
-            <button onClick={cadastrarTerapeuta} style={{ padding: '8px 15px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>Cadastrar Terapeuta</button>
+        <div style={{ background: '#fff3cd', padding: '10px', borderRadius: '8px', marginBottom: '15px', border: '1px solid #ffeeba' }}>
+          <h4 style={{ margin: '0 0 5px 0' }}>Modo Administrador</h4>
+          <div style={{ display: 'flex', gap: '5px' }}>
+            <input placeholder="Nome terapeuta" value={novoNomeT} onChange={(e) => setNovoNomeT(e.target.value)} style={{ padding: '8px', flex: 1 }} />
+            <button onClick={cadastrarTerapeuta} style={{ padding: '8px', background: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>Cadastrar</button>
           </div>
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <select value={filtroDia} onChange={(e) => setFiltroDia(e.target.value)} style={{ padding: '10px', flex: 1 }}>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+        <select value={filtroDia} onChange={(e) => setFiltroDia(e.target.value)} style={{ padding: '8px', flex: 1 }}>
           {['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'].map(d => <option key={d}>{d}</option>)}
         </select>
-        <select value={filtroTurno} onChange={(e) => setFiltroTurno(e.target.value)} style={{ padding: '10px', flex: 1 }}>
+        <select value={filtroTurno} onChange={(e) => setFiltroTurno(e.target.value)} style={{ padding: '8px', flex: 1 }}>
           <option>Manhã</option>
           <option>Tarde</option>
           <option>Dia todo</option>
         </select>
       </div>
 
-      <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '10px' }}>
-        <tbody>
-          {getHorarios().map(h => (
-            <tr key={h}>
-              <td style={{ fontWeight: 'bold', width: '60px' }}>{h}</td>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {getHorarios().map(h => (
+          <div key={h} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ fontWeight: 'bold', width: '50px', flexShrink: 0 }}>{h}</div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', width: '100%' }}>
               {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, filtroTurno)).map((t: any) => (
-                <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', verticalAlign: 'top' }}>
-                  <strong style={{ color: '#0056b3', cursor: isAdmin ? 'pointer' : 'default' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
+                <div key={t.id} style={{ padding: '8px', background: 'white', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', width: '120px', flexShrink: 0 }}>
+                  <strong style={{ color: '#0056b3', cursor: isAdmin ? 'pointer' : 'default', fontSize: '0.85rem' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
                     const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
-                      <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag ? getCorStatus(ag.status) : '#e9ecef', borderRadius: '6px', color: ag?.status === 'Não marcou' ? 'black' : 'white', fontWeight: 'bold' }}>
+                      <div key={slot} style={{ marginTop: '5px', padding: '6px', background: ag ? getCorStatus(ag.status) : '#e9ecef', borderRadius: '4px', color: ag?.status === 'Não marcou' ? 'black' : 'white', fontWeight: 'bold', fontSize: '0.75rem' }}>
                         {ag ? (
                           <>
                             <div style={{ cursor: isAdmin ? 'pointer' : 'default' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            <div style={{ fontSize: '10px' }}>{ag.status}</div>
-                            {isAdmin && <button onClick={() => atualizarStatus(ag)}>Trocar</button>}
+                            <div style={{ fontSize: '9px' }}>{ag.status}</div>
+                            {isAdmin && <button onClick={() => atualizarStatus(ag)} style={{ fontSize: '9px', marginTop: '3px' }}>Trocar</button>}
                           </>
-                        ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
+                        ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)} style={{ fontSize: '9px' }}>+ Agendar</button>}
                       </div>
                     );
                   })}
-                </td>
+                </div>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
