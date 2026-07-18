@@ -50,8 +50,13 @@ export default function App() {
     carregarDados();
   }
 
+  // NOVA LÓGICA: Ciclo Confirmado -> Não vem -> Não marcou -> Confirmado
   async function atualizarStatus(ag: any) {
-    const novoStatus = ag.status === 'Não vem' ? 'Confirmado' : 'Não vem';
+    let novoStatus = 'Confirmado';
+    if (ag.status === 'Confirmado') novoStatus = 'Não vem';
+    else if (ag.status === 'Não vem') novoStatus = 'Não marcou';
+    else novoStatus = 'Confirmado';
+    
     await supabase.from('grade_fixa').update({ status: novoStatus }).eq('id', ag.id);
     carregarDados();
   }
@@ -79,6 +84,13 @@ export default function App() {
     if (filtroTurno === 'Manhã') return ['08:00', '09:00', '10:00', '11:00'];
     if (filtroTurno === 'Tarde') return ['13:00', '14:00', '15:00', '16:00'];
     return ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+  };
+
+  // Helper para definir a cor baseada no status
+  const getCorStatus = (status: string) => {
+    if (status === 'Não vem') return '#ffcccc';
+    if (status === 'Não marcou') return '#fff3cd';
+    return '#f1f8ff'; // Cor padrão (Confirmado)
   };
 
   return (
@@ -115,18 +127,19 @@ export default function App() {
         <tbody>
           {getHorarios().map(h => (
             <tr key={h}>
-              <td style={{ fontWeight: 'bold' }}>{h}</td>
+              <td style={{ fontWeight: 'bold', width: '60px' }}>{h}</td>
               {terapeutas.filter((t: any) => t.dia === filtroDia && isHorarioNoTurno(h, filtroTurno)).map((t: any) => (
-                <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', verticalAlign: 'top' }}>
+                <td key={t.id} style={{ padding: '10px', background: 'white', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)', verticalAlign: 'top' }}>
                   <strong style={{ color: '#0056b3', cursor: isAdmin ? 'pointer' : 'default' }} onClick={() => isAdmin && editarTerapeuta(t)}>{t.nome}</strong>
                   {[1, 2].map((slot) => {
                     const ag = grade.find((g: any) => g.terapeuta_id === t.id && g.horario_inicio.includes(h) && g.dia_semana === filtroDia && g.slot === slot);
                     return (
-                      <div key={slot} style={{ marginTop: '5px', padding: '5px', background: ag?.status === 'Não vem' ? '#ffcccc' : '#ccffcc', borderRadius: '4px' }}>
+                      <div key={slot} style={{ marginTop: '8px', padding: '8px', background: ag ? getCorStatus(ag.status) : '#f8f9fa', borderRadius: '6px' }}>
                         {ag ? (
                           <>
                             <div style={{ cursor: isAdmin ? 'pointer' : 'default', fontWeight: 'bold' }} onClick={() => isAdmin && gerenciarPaciente(ag)}>{ag.pacientes?.nome}</div>
-                            {isAdmin && <button onClick={() => atualizarStatus(ag)} style={{ marginTop: '5px', fontSize: '10px' }}>Trocar Status</button>}
+                            <div style={{ fontSize: '10px', color: '#555' }}>{ag.status}</div>
+                            {isAdmin && <button onClick={() => atualizarStatus(ag)}>Trocar</button>}
                           </>
                         ) : isAdmin && <button onClick={() => adicionarPaciente(t.id, filtroDia, h, slot)}>+ Agendar</button>}
                       </div>
